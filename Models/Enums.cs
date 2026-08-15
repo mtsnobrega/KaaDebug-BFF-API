@@ -1,4 +1,6 @@
-﻿namespace kaadebug_bff_api.Models
+﻿using NpgsqlTypes;
+
+namespace kaadebug_bff_api.Models
 {
     /// <summary>
     /// Espelha o ENUM health_status do PostgreSQL.
@@ -6,8 +8,11 @@
     /// </summary>
     public enum HealthStatus
     {
+        [PgName("HEALTHY")]
         Healthy,
+        [PgName("WARNING")]
         Warning,
+        [PgName("CRITICAL")]
         Critical
     }
 
@@ -16,9 +21,15 @@
     /// </summary>
     public enum ConnectionStatus
     {
+        [PgName("ONLINE")]
         Online,
+        [PgName("OFFLINE")]
         Offline,
-        Unassociated
+        [PgName("UNASSOCIATED")]
+        Unassociated,
+        [PgName("NOTFOUND")]
+        NotFound
+
     }
 
     /// <summary>
@@ -26,9 +37,13 @@
     /// </summary>
     public enum SensorType
     {
+        [PgName("SOIL_MOISTURE")]
         SoilMoisture,
+        [PgName("AIR_HUMIDITY")]
         AirHumidity,
+        [PgName("TEMPERATURE")]
         Temperature,
+        [PgName("LUMINOSITY")]
         Luminosity
     }
 
@@ -37,8 +52,11 @@
     /// </summary>
     public enum NotificationPriority
     {
+        [PgName("LOW")]
         Low,
+        [PgName("MEDIUM")]
         Medium,
+        [PgName("HIGH")]
         High
     }
 }

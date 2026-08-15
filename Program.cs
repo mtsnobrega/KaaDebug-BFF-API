@@ -29,6 +29,31 @@ var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
     ?? throw new InvalidOperationException("String de conexão 'DefaultConnection' não encontrada.");
 
+// Uma única instância do tradutor para a aplicação inteira
+var snakeCaseTranslator = new NpgsqlSnakeCaseNameTranslator();
+
+var dataSourceBuilder = new NpgsqlDataSourceBuilder(connectionString);
+dataSourceBuilder.MapEnum<HealthStatus>("health_status", nameTranslator: snakeCaseTranslator);
+dataSourceBuilder.MapEnum<ConnectionStatus>("connection_status", nameTranslator: snakeCaseTranslator);
+dataSourceBuilder.MapEnum<SensorType>("sensor_type", nameTranslator: snakeCaseTranslator);
+dataSourceBuilder.MapEnum<NotificationPriority>("notification_priority", nameTranslator: snakeCaseTranslator);
+var dataSource = dataSourceBuilder.Build();
+
+builder.Services.AddDbContext<PlantCareDbContext>(options =>
+{
+    options.UseNpgsql(dataSource, npgsqlOptions =>
+    {
+        npgsqlOptions.MapEnum<HealthStatus>("health_status", null, snakeCaseTranslator);
+        npgsqlOptions.MapEnum<ConnectionStatus>("connection_status", null, snakeCaseTranslator);
+        npgsqlOptions.MapEnum<SensorType>("sensor_type", null, snakeCaseTranslator);
+        npgsqlOptions.MapEnum<NotificationPriority>("notification_priority", null, snakeCaseTranslator);
+    });
+
+    if (builder.Environment.IsDevelopment())
+        options.EnableSensitiveDataLogging();
+});
+
+/*
 var dataSourceBuilder = new NpgsqlDataSourceBuilder(connectionString);
 
 dataSourceBuilder.MapEnum<HealthStatus>(
@@ -51,12 +76,21 @@ var dataSource = dataSourceBuilder.Build();
 
 builder.Services.AddDbContext<PlantCareDbContext>(options =>
 {
-    options.UseNpgsql(dataSource);
+    options.UseNpgsql(dataSource, npgsqlOptions =>
+    {
+        npgsqlOptions.MapEnum<HealthStatus>("health_status", null, new NpgsqlSnakeCaseNameTranslator());
+        npgsqlOptions.MapEnum<ConnectionStatus>("connection_status", null, new NpgsqlSnakeCaseNameTranslator());
+        npgsqlOptions.MapEnum<SensorType>("sensor_type", null, new NpgsqlSnakeCaseNameTranslator());
+        npgsqlOptions.MapEnum<NotificationPriority>("notification_priority", null, new NpgsqlSnakeCaseNameTranslator());
+
+    });
 
     // Em desenvolvimento: loga as queries SQL no console
     if (builder.Environment.IsDevelopment())
         options.EnableSensitiveDataLogging();
 });
+
+*/
 
 // ══════════════════════════════════════════════════════════════════════════════
 // 2. AUTENTICAÇÃO JWT

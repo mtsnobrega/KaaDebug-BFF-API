@@ -16,31 +16,37 @@ namespace kaadebug_bff_api.Infrastructure
         public DbSet<Notification> Notifications => Set<Notification>();
         public DbSet<DiagnosisResult> DiagnosisResults => Set<DiagnosisResult>();
 
+        // ── ENUMs nativos do PostgreSQL ───────────────────────────────────────
+        // O Npgsql mapeia os ENUMs C# para os ENUMs do PostgreSQL usando
+        // snake_case por padrão. Os valores abaixo correspondem exatamente
+        // aos definidos nos scripts de criação do banco.
+        /*
+        modelBuilder.HasPostgresEnum<HealthStatus>(
+            "health_status",
+            new[] { "HEALTHY", "WARNING", "CRITICAL" });
+
+        modelBuilder.HasPostgresEnum<ConnectionStatus>(
+            "connection_status",
+            new[] { "ONLINE", "OFFLINE", "UNASSOCIATED" });
+
+        modelBuilder.HasPostgresEnum<SensorType>(
+            "sensor_type",
+            new[] { "SOIL_MOISTURE", "AIR_HUMIDITY", "TEMPERATURE", "LUMINOSITY" });
+
+        modelBuilder.HasPostgresEnum<NotificationPriority>(
+            "notification_priority",
+            new[] { "LOW", "MEDIUM", "HIGH" });
+        */
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
-            // ── ENUMs nativos do PostgreSQL ───────────────────────────────────────
-            // O Npgsql mapeia os ENUMs C# para os ENUMs do PostgreSQL usando
-            // snake_case por padrão. Os valores abaixo correspondem exatamente
-            // aos definidos nos scripts de criação do banco.
-            /*
-            modelBuilder.HasPostgresEnum<HealthStatus>(
-                "health_status",
-                new[] { "HEALTHY", "WARNING", "CRITICAL" });
+            // Mapeie TODAS as enums e passe o nome exato do tipo no PostgreSQL
+            modelBuilder.HasPostgresEnum<HealthStatus>("health_status");
+            modelBuilder.HasPostgresEnum<ConnectionStatus>("connection_status");
+            modelBuilder.HasPostgresEnum<SensorType>("sensor_type");
+            modelBuilder.HasPostgresEnum<NotificationPriority>("notification_priority");
 
-            modelBuilder.HasPostgresEnum<ConnectionStatus>(
-                "connection_status",
-                new[] { "ONLINE", "OFFLINE", "UNASSOCIATED" });
-
-            modelBuilder.HasPostgresEnum<SensorType>(
-                "sensor_type",
-                new[] { "SOIL_MOISTURE", "AIR_HUMIDITY", "TEMPERATURE", "LUMINOSITY" });
-
-            modelBuilder.HasPostgresEnum<NotificationPriority>(
-                "notification_priority",
-                new[] { "LOW", "MEDIUM", "HIGH" });
-            */
             // ── Users ─────────────────────────────────────────────────────────────
             modelBuilder.Entity<User>(entity =>
             {
@@ -78,7 +84,9 @@ namespace kaadebug_bff_api.Infrastructure
 
                 entity.Property(u => u.CreatedAt)
                       .HasColumnName("created_at")
-                      .HasDefaultValueSql("CURRENT_TIMESTAMP");
+                      .HasColumnType("timestamp without time zone")
+                      .HasDefaultValueSql("CURRENT_TIMESTAMP")
+                      .ValueGeneratedOnAdd();
             });
 
             // ── Species ───────────────────────────────────────────────────────────
@@ -136,13 +144,16 @@ namespace kaadebug_bff_api.Infrastructure
 
                 entity.Property(d => d.ConnectionStatus)
                       .HasColumnName("connection_status")
+                      .HasColumnType("connection_status")
                       .HasDefaultValue(ConnectionStatus.Unassociated);
 
                 entity.Property(d => d.LastHeartbeatAt)
+                      .HasColumnType("timestamp without time zone")
                       .HasColumnName("last_heartbeat_at");
 
                 entity.Property(d => d.RegisteredAt)
                       .HasColumnName("registered_at")
+                      .HasColumnType("timestamp without time zone")
                       .HasDefaultValueSql("CURRENT_TIMESTAMP");
             });
 
@@ -171,6 +182,7 @@ namespace kaadebug_bff_api.Infrastructure
 
                 entity.Property(p => p.HealthStatus)
                       .HasColumnName("health_status")
+                      .HasColumnType("health_status")
                       .HasDefaultValue(HealthStatus.Healthy);
 
                 entity.Property(p => p.StatusReason)
@@ -179,7 +191,8 @@ namespace kaadebug_bff_api.Infrastructure
 
                 entity.Property(p => p.CreatedAt)
                       .HasColumnName("created_at")
-                      .HasDefaultValueSql("CURRENT_TIMESTAMP");
+                      .HasDefaultValueSql("CURRENT_TIMESTAMP")
+                      .ValueGeneratedOnAdd();
 
                 entity.Property(p => p.UpdatedAt)
                       .HasColumnName("updated_at")
@@ -204,6 +217,18 @@ namespace kaadebug_bff_api.Infrastructure
                       .HasConstraintName("fk_plants_device")
                       .OnDelete(DeleteBehavior.SetNull)
                       .IsRequired(false);
+
+                entity.HasMany(p => p.SensorReadings)
+                      .WithOne(s => s.Plant)
+                      .HasForeignKey(s => s.PlantId)
+                      .HasConstraintName("fk_sensor_readings_plant")
+                      .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasMany(p => p.Notifications)
+                      .WithOne(n => n.Plant)
+                      .HasForeignKey(n => n.PlantId)
+                      .HasConstraintName("fk_notifications_plant")
+                      .OnDelete(DeleteBehavior.Cascade);
             });
 
             // ── SensorReadings ────────────────────────────────────────────────────
@@ -221,7 +246,8 @@ namespace kaadebug_bff_api.Infrastructure
                 entity.Property(r => r.DeviceId).HasColumnName("device_id");
 
                 entity.Property(r => r.SensorType)
-                      .HasColumnName("sensor_type");
+                      .HasColumnName("sensor_type")
+                      .HasColumnType("sensor_type");
 
                 entity.Property(r => r.Value)
                       .HasColumnName("value")
@@ -270,6 +296,7 @@ namespace kaadebug_bff_api.Infrastructure
 
                 entity.Property(n => n.Priority)
                       .HasColumnName("priority")
+                      .HasColumnType("notification_priority")
                       .HasDefaultValue(NotificationPriority.Low);
 
                 entity.Property(n => n.IsRead)
@@ -278,7 +305,8 @@ namespace kaadebug_bff_api.Infrastructure
 
                 entity.Property(n => n.CreatedAt)
                       .HasColumnName("created_at")
-                      .HasDefaultValueSql("CURRENT_TIMESTAMP");
+                      .HasDefaultValueSql("CURRENT_TIMESTAMP")
+                      .ValueGeneratedOnAdd();
 
                 entity.HasOne(n => n.User)
                       .WithMany(u => u.Notifications)

@@ -55,7 +55,10 @@ namespace kaadebug_bff_api.Repositories
             _context.Devices.FirstOrDefaultAsync(d => d.Id == id);
 
         public Task<Device?> GetByCodeAsync(string code) =>
-            _context.Devices.FirstOrDefaultAsync(d => d.Code == code.ToUpper());
+            _context.Devices
+            .Include(d => d.Plant)
+            .FirstOrDefaultAsync(d => d.Code == code.ToUpper());
+
 
         public async Task UpdateAsync(Device device)
         {
@@ -108,6 +111,12 @@ namespace kaadebug_bff_api.Repositories
 
         public async Task UpdateAsync(Plant plant)
         {
+            // Garante que o Entity Framework entenda o CreatedAt como UTC
+            if (plant.CreatedAt.Kind == DateTimeKind.Unspecified)
+            {
+                plant.CreatedAt = DateTime.SpecifyKind(plant.CreatedAt, DateTimeKind.Utc);
+            }
+
             plant.UpdatedAt = DateTime.UtcNow;
             _context.Plants.Update(plant);
             await _context.SaveChangesAsync();

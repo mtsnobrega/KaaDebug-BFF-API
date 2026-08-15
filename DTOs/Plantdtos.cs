@@ -140,4 +140,11 @@ namespace kaadebug_bff_api.DTOs
         string Code,
         string ConnectionStatus,
         DateTime? LastHeartbeatAt);
+
+    public record AssociateDeviceRequest(
+    /// <summary>
+    /// Código do dispositivo ESP32 a associar.
+    /// Enviar string vazia ("") para desassociar o dispositivo atual.
+    /// </summary>
+    [Required] string DeviceCode);
 }

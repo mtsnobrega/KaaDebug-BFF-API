@@ -28,6 +28,9 @@ namespace kaadebug_bff_api.Services.Interfaces
         Task<ServiceResult<PlantSummaryResponse>> CreateAsync(CreatePlantRequest request, Guid userId);
         Task<ServiceResult> UpdateAsync(Guid plantId, UpdatePlantRequest request, Guid userId);
         Task<ServiceResult> DeleteAsync(Guid plantId, Guid userId);
+
+
+        Task<ServiceResult> AssociateDeviceAsync(Guid plantId, AssociateDeviceRequest request, Guid userId);
     }
 
     public interface IPlantHistoryService
@@ -103,4 +106,8 @@ namespace kaadebug_bff_api.Services.Interfaces
         public new static ServiceResult<T> NotFound(string message = "Recurso não encontrado.") =>
             new() { Success = false, ErrorMessage = message, StatusCode = 404 };
     }
+
+
+
+
 }

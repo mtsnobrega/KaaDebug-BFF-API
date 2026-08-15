@@ -156,5 +156,31 @@ namespace kaadebug_bff_api.Controllers
             var result = await _diagnosisService.GetHistoryAsync(id, CurrentUserId);
             return ToActionResult(result);
         }
+
+
+
+
+
+
+
+
+        /// <summary>
+        /// Associa ou desassocia um dispositivo ESP32 de uma planta.
+        /// Não exige o nome da planta — operação exclusiva de dispositivo.
+        ///
+        /// DeviceCode ""           → desassocia o dispositivo atual
+        /// DeviceCode "ESP32-XXXX" → associa/substitui o dispositivo
+        /// </summary>
+        [HttpPut("{id:guid}/device")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> AssociateDevice(
+            [FromRoute] Guid id,
+            [FromBody] AssociateDeviceRequest request)
+        {
+            var result = await _plantService.AssociateDeviceAsync(id, request, CurrentUserId);
+            return ToActionResult(result);
+        }
     }
 }

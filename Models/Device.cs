@@ -8,6 +8,10 @@
         public DateTime? LastHeartbeatAt { get; set; }
         public DateTime RegisteredAt { get; set; }
 
+        // NOVA PROPRIEDADE: Define quem é o dono! 
+        // Pode ser nula porque ele nasce livre na fábrica.
+        public Guid? PlantId { get; set; }
+
         // Navegação
         public Plant? Plant { get; set; }
         public ICollection<SensorReading> SensorReadings { get; set; } = new List<SensorReading>();
