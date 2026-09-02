@@ -11,6 +11,7 @@
         // NOVA PROPRIEDADE: Define quem é o dono! 
         // Pode ser nula porque ele nasce livre na fábrica.
         public Guid? PlantId { get; set; }
+        public Guid? UserId { get; set; }
 
         // Navegação
         public Plant? Plant { get; set; }

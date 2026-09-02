@@ -28,6 +28,17 @@ namespace kaadebug_bff_api.Repositories
 
         public async Task UpdateAsync(User user)
         {
+            //_context.Users.Update(user);
+            //await _context.SaveChangesAsync();
+
+            if (user.CreatedAt.Kind == DateTimeKind.Unspecified)
+            {
+                user.CreatedAt = DateTime.SpecifyKind(
+                    user.CreatedAt,
+                    DateTimeKind.Utc
+                );
+            }
+
             _context.Users.Update(user);
             await _context.SaveChangesAsync();
         }

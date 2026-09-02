@@ -20,23 +20,6 @@ namespace kaadebug_bff_api.Infrastructure
         // O Npgsql mapeia os ENUMs C# para os ENUMs do PostgreSQL usando
         // snake_case por padrão. Os valores abaixo correspondem exatamente
         // aos definidos nos scripts de criação do banco.
-        /*
-        modelBuilder.HasPostgresEnum<HealthStatus>(
-            "health_status",
-            new[] { "HEALTHY", "WARNING", "CRITICAL" });
-
-        modelBuilder.HasPostgresEnum<ConnectionStatus>(
-            "connection_status",
-            new[] { "ONLINE", "OFFLINE", "UNASSOCIATED" });
-
-        modelBuilder.HasPostgresEnum<SensorType>(
-            "sensor_type",
-            new[] { "SOIL_MOISTURE", "AIR_HUMIDITY", "TEMPERATURE", "LUMINOSITY" });
-
-        modelBuilder.HasPostgresEnum<NotificationPriority>(
-            "notification_priority",
-            new[] { "LOW", "MEDIUM", "HIGH" });
-        */
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -65,6 +48,7 @@ namespace kaadebug_bff_api.Infrastructure
                 entity.Property(u => u.Email)
                       .HasColumnName("email")
                       .HasMaxLength(250)
+
                       .IsRequired();
 
                 entity.HasIndex(u => u.Email).IsUnique();
@@ -84,7 +68,7 @@ namespace kaadebug_bff_api.Infrastructure
 
                 entity.Property(u => u.CreatedAt)
                       .HasColumnName("created_at")
-                      .HasColumnType("timestamp without time zone")
+                      .HasColumnType("timestamp with time zone")
                       .HasDefaultValueSql("CURRENT_TIMESTAMP")
                       .ValueGeneratedOnAdd();
             });
@@ -141,6 +125,14 @@ namespace kaadebug_bff_api.Infrastructure
                       .IsRequired();
 
                 entity.HasIndex(d => d.Code).IsUnique();
+
+                entity.Property(d => d.UserId)
+                      .HasColumnName("user_id");
+                
+                entity.Property(d => d.PlantId)
+                     .HasColumnName("PlantId")
+                     .IsRequired(false);
+                
 
                 entity.Property(d => d.ConnectionStatus)
                       .HasColumnName("connection_status")

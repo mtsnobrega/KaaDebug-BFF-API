@@ -27,8 +27,11 @@ namespace kaadebug_bff_api.Models
         Offline,
         [PgName("UNASSOCIATED")]
         Unassociated,
+        [PgName("ASSOCIATED")]
+        Associated,
         [PgName("NOTFOUND")]
         NotFound
+        
 
     }
 
