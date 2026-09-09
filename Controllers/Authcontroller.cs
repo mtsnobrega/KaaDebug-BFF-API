@@ -1,4 +1,22 @@
-﻿using kaadebug_bff_api.DTOs;
+﻿/*
+ * Responsabilidade:
+ * Ponto de entrada (endpoints) para as operações de identidade do sistema.
+ * 
+ * Endpoints:
+ * - POST /auth/login (Autentica e retorna JWT)
+ * - POST /auth/register (Cria conta)
+ * - POST /auth/recovery/request-code (Inicia fluxo de recuperação via OTP)
+ * - POST /auth/recovery/validate-code (Verifica OTP digitado)
+ * - POST /auth/recovery/reset-password (Muda a senha)
+ * 
+ * Serviço utilizado: IAuthService
+ * 
+ * Papel na entrada das requisições:
+ * Ao contrário dos demais Controllers, este não exige o token JWT ([Authorize]) 
+ * para acessar a maioria de suas rotas, pois é o emissor do mesmo.
+ */
+
+using kaadebug_bff_api.DTOs;
 using kaadebug_bff_api.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 

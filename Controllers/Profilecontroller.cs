@@ -1,4 +1,16 @@
-﻿using kaadebug_bff_api.DTOs;
+﻿/*
+ * Responsabilidade:
+ * Ponto de entrada (endpoints) para as operações gerenciais da conta do usuário.
+ * 
+ * Endpoints:
+ * - GET /profile (Retorna informações do perfil atual)
+ * - PUT /profile (Atualiza chaves públicas: nome e opções de notificação)
+ * - POST /profile/change-password (Reescreve hash com segurança)
+ * 
+ * Serviço utilizado: IProfileService
+ */
+
+using kaadebug_bff_api.DTOs;
 using kaadebug_bff_api.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

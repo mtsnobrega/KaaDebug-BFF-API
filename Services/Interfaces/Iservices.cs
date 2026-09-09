@@ -1,4 +1,20 @@
-﻿using kaadebug_bff_api.DTOs;
+﻿/*
+ * Responsabilidade:
+ * Define os contratos (interfaces) para a camada de Serviços (regras de negócio).
+ * Também define a classe genérica 'ServiceResult', que padroniza as respostas das operações,
+ * evitando o lançamento de exceções para regras de negócio não atendidas.
+ *
+ * Papel na arquitetura:
+ * Atua como intermediário entre a camada de apresentação (Controllers) e a de dados (Repositories).
+ * É responsável por validar regras de negócio, coordenar consultas em múltiplos repositórios e 
+ * formatar a saída utilizando DTOs.
+ * 
+ * Padrão notável (Result Pattern):
+ * O encapsulamento de sucesso, mensagem de erro e status HTTP dentro de 'ServiceResult' 
+ * mantém os Controllers enxutos e a lógica de negócio controlada sem abusar de blocos try/catch.
+ */
+
+using kaadebug_bff_api.DTOs;
 
 namespace kaadebug_bff_api.Services.Interfaces
 {
@@ -10,17 +26,14 @@ namespace kaadebug_bff_api.Services.Interfaces
         Task<ServiceResult> ValidateRecoveryCodeAsync(ValidateRecoveryCodeRequest request);
         Task<ServiceResult> ResetPasswordAsync(ResetPasswordRequest request);
     }
-
     public interface IDashboardService
     {
         Task<ServiceResult<DashboardResponse>> GetDashboardAsync(Guid userId);
     }
-
     public interface ISpeciesService
     {
         Task<ServiceResult<IEnumerable<SpeciesResponse>>> GetAllAsync();
     }
-
     public interface IPlantService
     {
         Task<ServiceResult<IEnumerable<PlantSummaryResponse>>> GetAllAsync(Guid userId);
@@ -28,39 +41,31 @@ namespace kaadebug_bff_api.Services.Interfaces
         Task<ServiceResult<PlantSummaryResponse>> CreateAsync(CreatePlantRequest request, Guid userId);
         Task<ServiceResult> UpdateAsync(Guid plantId, UpdatePlantRequest request, Guid userId);
         Task<ServiceResult> DeleteAsync(Guid plantId, Guid userId);
-
-
         Task<ServiceResult> AssociateDeviceAsync(Guid plantId, AssociateDeviceRequest request, Guid userId);
     }
-
     public interface IPlantHistoryService
     {
         Task<ServiceResult<PlantHistoryResponse>> GetHistoryAsync(Guid plantId, Guid userId, string period);
     }
-
     public interface IDeviceService
     {
         Task<ServiceResult<DeviceVerificationResponse>> VerifyAsync(string deviceCode);
     }
-
     public interface INotificationService
     {
         Task<ServiceResult<IEnumerable<NotificationSummaryResponse>>> GetAllAsync(Guid userId);
         Task<ServiceResult> MarkAsReadAsync(Guid notificationId, Guid userId);
         Task<ServiceResult> ClearAllAsync(Guid userId);
     }
-
     public interface IDiagnosisService
     {
         Task<ServiceResult<DiagnosisResultResponse>> AnalyzeAsync(Guid plantId, Guid userId, Stream imageStream, string fileName);
         Task<ServiceResult<IEnumerable<DiagnosisResultResponse>>> GetHistoryAsync(Guid plantId, Guid userId);
     }
-
     public interface IPlantCareService
     {
         Task<ServiceResult<object>> GetCareInfoAsync(Guid plantId, Guid userId);
     }
-
     public interface IProfileService
     {
         Task<ServiceResult<ProfileResponse>> GetAsync(Guid userId);
@@ -69,7 +74,6 @@ namespace kaadebug_bff_api.Services.Interfaces
     }
 
     // ── Result pattern ────────────────────────────────────────────────────────────
-
     /// <summary>
     /// Resultado genérico de operações de serviço.
     /// Evita exceptions para erros de negócio esperados (ex: e-mail já cadastrado,
@@ -106,8 +110,4 @@ namespace kaadebug_bff_api.Services.Interfaces
         public new static ServiceResult<T> NotFound(string message = "Recurso não encontrado.") =>
             new() { Success = false, ErrorMessage = message, StatusCode = 404 };
     }
-
-
-
-
 }

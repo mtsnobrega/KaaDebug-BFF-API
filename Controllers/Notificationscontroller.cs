@@ -1,4 +1,15 @@
-﻿using kaadebug_bff_api.DTOs;
+﻿/*
+ * Responsabilidade:
+ * Ponto de entrada (endpoints) para controle da caixa de alertas do usuário.
+ * 
+ * Endpoints:
+ * - GET /notifications (Lista todas as notificações, não lidas no topo)
+ * - PUT /notifications/{id}/read (Marca notificação específica como lida)
+ * - DELETE /notifications (Apaga todo o histórico)
+ * 
+ * Serviço utilizado: INotificationService
+ */
+using kaadebug_bff_api.DTOs;
 using kaadebug_bff_api.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

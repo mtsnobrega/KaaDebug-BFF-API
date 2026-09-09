@@ -1,4 +1,14 @@
-﻿using kaadebug_bff_api.DTOs;
+﻿/*
+ * Responsabilidade:
+ * Ponto de entrada (endpoints) para o carregamento do Dashboard mobile.
+ * 
+ * Endpoints:
+ * - GET /dashboard (Retorna agregados do sistema e resumos do usuário)
+ * 
+ * Serviço utilizado: IDashboardService
+ */
+
+using kaadebug_bff_api.DTOs;
 using kaadebug_bff_api.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

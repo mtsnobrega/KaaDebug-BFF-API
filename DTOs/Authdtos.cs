@@ -1,9 +1,20 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿/*
+ * Responsabilidade:
+ * Define os objetos de transferência de dados (DTOs) utilizados exclusivamente 
+ * no fluxo de Autenticação e Autorização (Login, Registro, Recuperação de Senha).
+ *
+ * Papel na arquitetura:
+ * Implementa o DTO Pattern utilizando o recurso de 'records' do C# 9+. Isso garante 
+ * imutabilidade, sintaxe concisa e previne que as entidades de banco (como User) sejam
+ * expostas diretamente nos Controllers, mascarando campos sensíveis como o PasswordHash.
+ * Também carrega as anotações de validação (Data Annotations) para consistência na API.
+ */
+
+using System.ComponentModel.DataAnnotations;
 
 namespace kaadebug_bff_api.DTOs
 {
     // ── Requests ──────────────────────────────────────────────────────────────────
-
     public record LoginRequest(
         [Required, EmailAddress] string Email,
         [Required, MinLength(6)] string Password);
@@ -26,7 +37,6 @@ namespace kaadebug_bff_api.DTOs
         [Required, MinLength(6)] string NewPassword);
 
     // ── Responses ─────────────────────────────────────────────────────────────────
-
     public record LoginResponse(
         string Token,
         DateTime ExpiresAt,

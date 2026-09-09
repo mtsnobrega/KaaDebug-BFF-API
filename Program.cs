@@ -1,4 +1,24 @@
-﻿using kaadebug_bff_api.Infrastructure;
+﻿/*
+ * Responsabilidade:
+ * Ponto de entrada da aplicação (Entry Point) e configuração do pipeline HTTP do ASP.NET Core.
+ * Este arquivo concentra as configurações de infraestrutura, injeção de dependências (DI), 
+ * middleware e integração com serviços externos.
+ *
+ * Papel na arquitetura:
+ * Atua como o "Composition Root". É aqui que as camadas se conectam. Ele registra os
+ * Repositories (acesso a dados) e Services (regras de negócio) no contêiner de DI 
+ * utilizando o ciclo de vida Scoped, garantindo uma instância por requisição HTTP.
+ *
+ * Principais configurações:
+ * - Banco de Dados: PostgreSQL (Npgsql) com mapeamento nativo de ENUMs em snake_case.
+ * - Autenticação: Configuração de JWT Bearer sem tolerância de expiração (ClockSkew = Zero).
+ * - Serialização: Configuração do JSON para ignorar nulos e tratar enums como string.
+ * - Documentação: Swagger configurado para aceitar tokens JWT.
+ * - Segurança: CORS configurado prioritariamente para o aplicativo Mobile (BFF).
+ * - Migrations: Aplicação automática de migrations em ambiente de Desenvolvimento.
+ */
+
+using kaadebug_bff_api.Infrastructure;
 using kaadebug_bff_api.Models;
 using kaadebug_bff_api.Repositories;
 using kaadebug_bff_api.Repositories.Interfaces;
@@ -21,10 +41,6 @@ var builder = WebApplication.CreateBuilder(args);
 // O NpgsqlDataSourceBuilder precisa ser configurado ANTES do AddDbContext
 // para que os ENUMs nativos do PostgreSQL sejam reconhecidos corretamente.
 // O NpgsqlSnakeCaseNameTranslator converte automaticamente:
-//   HealthStatus.Healthy       → "HEALTHY"
-//   SensorType.SoilMoisture    → "SOIL_MOISTURE"
-//   ConnectionStatus.Online    → "ONLINE"
-//   NotificationPriority.Low   → "LOW"
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
     ?? throw new InvalidOperationException("String de conexão 'DefaultConnection' não encontrada.");
@@ -53,45 +69,6 @@ builder.Services.AddDbContext<PlantCareDbContext>(options =>
         options.EnableSensitiveDataLogging();
 });
 
-/*
-var dataSourceBuilder = new NpgsqlDataSourceBuilder(connectionString);
-
-dataSourceBuilder.MapEnum<HealthStatus>(
-    pgName: "health_status",
-    nameTranslator: new NpgsqlSnakeCaseNameTranslator());
-
-dataSourceBuilder.MapEnum<ConnectionStatus>(
-    pgName: "connection_status",
-    nameTranslator: new NpgsqlSnakeCaseNameTranslator());
-
-dataSourceBuilder.MapEnum<SensorType>(
-    pgName: "sensor_type",
-    nameTranslator: new NpgsqlSnakeCaseNameTranslator());
-
-dataSourceBuilder.MapEnum<NotificationPriority>(
-    pgName: "notification_priority",
-    nameTranslator: new NpgsqlSnakeCaseNameTranslator());
-
-var dataSource = dataSourceBuilder.Build();
-
-builder.Services.AddDbContext<PlantCareDbContext>(options =>
-{
-    options.UseNpgsql(dataSource, npgsqlOptions =>
-    {
-        npgsqlOptions.MapEnum<HealthStatus>("health_status", null, new NpgsqlSnakeCaseNameTranslator());
-        npgsqlOptions.MapEnum<ConnectionStatus>("connection_status", null, new NpgsqlSnakeCaseNameTranslator());
-        npgsqlOptions.MapEnum<SensorType>("sensor_type", null, new NpgsqlSnakeCaseNameTranslator());
-        npgsqlOptions.MapEnum<NotificationPriority>("notification_priority", null, new NpgsqlSnakeCaseNameTranslator());
-
-    });
-
-    // Em desenvolvimento: loga as queries SQL no console
-    if (builder.Environment.IsDevelopment())
-        options.EnableSensitiveDataLogging();
-});
-
-*/
-
 // ══════════════════════════════════════════════════════════════════════════════
 // 2. AUTENTICAÇÃO JWT
 // ══════════════════════════════════════════════════════════════════════════════
@@ -112,8 +89,6 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidAudience = builder.Configuration["Jwt:Audience"],
             IssuerSigningKey = new SymmetricSecurityKey(
                                            Encoding.UTF8.GetBytes(jwtKey)),
-            // Remove a tolerância padrão de 5 min do JWT — o token expira
-            // exatamente no tempo configurado
             ClockSkew = TimeSpan.Zero
         };
     });
@@ -154,11 +129,10 @@ builder.Services.AddScoped<IProfileService, ProfileService>();
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
-        // Serializa enums como string (ex: "HEALTHY") em vez de int (0)
+        // Serializa enums como string (ex: "HEALTHY") em vez de int (0) e Remove campos nulos das respostas JSON
         options.JsonSerializerOptions.Converters.Add(
             new System.Text.Json.Serialization.JsonStringEnumConverter());
 
-        // Remove campos nulos das respostas JSON
         options.JsonSerializerOptions.DefaultIgnoreCondition =
             System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull;
     });
@@ -282,5 +256,4 @@ if (app.Environment.IsDevelopment())
         app.Logger.LogError(ex, "Erro ao aplicar migrations.");
     }
 }
-
 app.Run();

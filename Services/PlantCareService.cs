@@ -1,4 +1,14 @@
-﻿using kaadebug_bff_api.Repositories.Interfaces;
+﻿/*
+ * Responsabilidade:
+ * Recuperar os guias de cuidados (CareInfo) relativos à espécie de uma planta específica.
+ *
+ * Papel na arquitetura:
+ * Demonstra um excelente uso de schema-less no PostgreSQL. Ao deserializar o JSONB 
+ * diretamente para um 'object', a API transfere a responsabilidade da estrutura da 
+ * informação para o frontend mobile, atuando estritamente como um conduíte flexível.
+ */
+
+using kaadebug_bff_api.Repositories.Interfaces;
 using kaadebug_bff_api.Services.Interfaces;
 using System.Text.Json;
 

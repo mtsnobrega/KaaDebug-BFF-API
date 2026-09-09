@@ -1,4 +1,14 @@
-﻿using kaadebug_bff_api.DTOs;
+﻿/*
+ * Responsabilidade:
+ * Agrega e calcula métricas do histórico de sensores (SensorReadings) de uma planta.
+ *
+ * Papel na arquitetura:
+ * Regra de negócio focada em UX. A API processa os cálculos matemáticos (Mínimo, 
+ * Máximo, Média) das leituras agrupadas por tipo de sensor. O BFF alivia o 
+ * aplicativo Mobile de realizar processamento iterativo pesado.
+ */
+
+using kaadebug_bff_api.DTOs;
 using kaadebug_bff_api.Models;
 using kaadebug_bff_api.Repositories.Interfaces;
 using kaadebug_bff_api.Services.Interfaces;
@@ -36,10 +46,7 @@ namespace kaadebug_bff_api.Services
              Min: plant.Species.AirHumidityMin,  Max: plant.Species.AirHumidityMax),
             (Type: SensorType.Temperature,  Unit: "°C",
              Min: plant.Species.TemperatureMin,  Max: plant.Species.TemperatureMax),
-            (Type: SensorType.Luminosity,   Unit: "lux",
-             Min: plant.Species.LuminosityMin,   Max: plant.Species.LuminosityMax),
         };
-
             var sensors = sensorConfigs.Select(config =>
             {
                 var typeReadings = readings

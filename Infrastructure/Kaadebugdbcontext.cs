@@ -1,13 +1,28 @@
-﻿using kaadebug_bff_api.Models;
-using Microsoft.EntityFrameworkCore;
+﻿/*
+ * Responsabilidade:
+ * Classe central do Entity Framework Core responsável por gerenciar a sessão com o 
+ * banco de dados, mapear as entidades (Models) para as tabelas relacionais e aplicar 
+ * restrições utilizando a Fluent API.
+ *
+ * Papel na arquitetura:
+ * Atua na camada de Infraestrutura (Infrastructure). É injetado nos Repositories para
+ * abstrair as operações de persistência e conversões de tipos complexos (como JSONB e Enums).
+ * 
+ * Configurações notáveis:
+ * - Geração automática de UUID v4 no banco (gen_random_uuid()).
+ * - Mapeamento explícito de ENUMs nativos do PostgreSQL.
+ * - Utilização nativa do tipo JSONB para campos de informação estruturada (CareInfo e IssuesJson).
+ * - Definição rigorosa de Foreign Keys (Cascade, Restrict, SetNull) garantindo integridade referencial.
+ */
 
+using kaadebug_bff_api.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace kaadebug_bff_api.Infrastructure
 {
     public class PlantCareDbContext : DbContext
     {
         public PlantCareDbContext(DbContextOptions<PlantCareDbContext> options) : base(options) { }
-
         public DbSet<User> Users => Set<User>();
         public DbSet<Species> Species => Set<Species>();
         public DbSet<Device> Devices => Set<Device>();
@@ -48,7 +63,6 @@ namespace kaadebug_bff_api.Infrastructure
                 entity.Property(u => u.Email)
                       .HasColumnName("email")
                       .HasMaxLength(250)
-
                       .IsRequired();
 
                 entity.HasIndex(u => u.Email).IsUnique();
@@ -100,8 +114,6 @@ namespace kaadebug_bff_api.Infrastructure
                 entity.Property(s => s.AirHumidityMax).HasColumnName("air_humidity_max").HasPrecision(5, 2);
                 entity.Property(s => s.TemperatureMin).HasColumnName("temperature_min").HasPrecision(5, 2);
                 entity.Property(s => s.TemperatureMax).HasColumnName("temperature_max").HasPrecision(5, 2);
-                entity.Property(s => s.LuminosityMin).HasColumnName("luminosity_min").HasPrecision(10, 2);
-                entity.Property(s => s.LuminosityMax).HasColumnName("luminosity_max").HasPrecision(10, 2);
 
                 // JSONB — o Npgsql serializa/desserializa JsonDocument automaticamente
                 entity.Property(s => s.CareInfo)
@@ -132,7 +144,6 @@ namespace kaadebug_bff_api.Infrastructure
                 entity.Property(d => d.PlantId)
                      .HasColumnName("PlantId")
                      .IsRequired(false);
-                
 
                 entity.Property(d => d.ConnectionStatus)
                       .HasColumnName("connection_status")
@@ -228,11 +239,10 @@ namespace kaadebug_bff_api.Infrastructure
             {
                 entity.ToTable("sensor_readings");
 
-                // BIGINT GENERATED ALWAYS AS IDENTITY
                 entity.HasKey(r => r.Id);
                 entity.Property(r => r.Id)
                       .HasColumnName("id")
-                      .UseIdentityAlwaysColumn(); // equivalente ao GENERATED ALWAYS AS IDENTITY
+                      .UseIdentityAlwaysColumn();
 
                 entity.Property(r => r.PlantId).HasColumnName("plant_id");
                 entity.Property(r => r.DeviceId).HasColumnName("device_id");
@@ -251,7 +261,6 @@ namespace kaadebug_bff_api.Infrastructure
                 entity.Property(r => r.ReadAt)
                       .HasColumnName("read_at");
 
-                // Índice em (plant_id, read_at) — chave para as queries de histórico
                 entity.HasIndex(r => new { r.PlantId, r.ReadAt })
                       .HasDatabaseName("ix_sensor_readings_plant_id_read_at");
 

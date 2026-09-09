@@ -1,4 +1,26 @@
-﻿using kaadebug_bff_api.DTOs;
+﻿/*
+ * Responsabilidade:
+ * O principal Controller do sistema. Ponto de entrada para operações 
+ * de CRUD das plantas, visualização de gráficos e integrações complexas (como 
+ * uploads de imagens para diagnósticos de IA).
+ * 
+ * Endpoints:
+ * - GET /plants (Lista)
+ * - GET /plants/{id} (Detalhes / Aggregate)
+ * - POST /plants (Cadastro)
+ * - PUT /plants/{id} (Atualização e reassociação de device)
+ * - DELETE /plants/{id} (Exclusão)
+ * - GET /plants/{id}/history (Dados temporais dos sensores)
+ * - GET /plants/{id}/care-tips (Dicas JSON)
+ * - POST /plants/{id}/diagnosis (Upload de Imagem [multipart/form-data])
+ * - GET /plants/{id}/diagnosis (Histórico de análises visuais)
+ * - PUT /plants/{id}/device (Vinculação forçada de hardware)
+ * 
+ * Serviços utilizados: 
+ * IPlantService, IPlantHistoryService, IPlantCareService, IDiagnosisService
+ */
+
+using kaadebug_bff_api.DTOs;
 using kaadebug_bff_api.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -156,13 +178,6 @@ namespace kaadebug_bff_api.Controllers
             var result = await _diagnosisService.GetHistoryAsync(id, CurrentUserId);
             return ToActionResult(result);
         }
-
-
-
-
-
-
-
 
         /// <summary>
         /// Associa ou desassocia um dispositivo ESP32 de uma planta.

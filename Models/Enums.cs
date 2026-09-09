@@ -1,4 +1,14 @@
-﻿using NpgsqlTypes;
+﻿/*
+ * Responsabilidade:
+ * Centraliza os enumeradores de domínio utilizados pela aplicação.
+ *
+ * Integração Específica (PostgreSQL):
+ * Utiliza o atributo '[PgName]' da biblioteca Npgsql para instruir o EF Core 
+ * a mapear os valores do C# diretamente para os Tipos ENUM nativos previamente
+ * criados no banco de dados PostgreSQL.
+ */
+
+using NpgsqlTypes;
 
 namespace kaadebug_bff_api.Models
 {
@@ -31,8 +41,6 @@ namespace kaadebug_bff_api.Models
         Associated,
         [PgName("NOTFOUND")]
         NotFound
-        
-
     }
 
     /// <summary>

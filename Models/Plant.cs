@@ -1,4 +1,20 @@
-﻿namespace kaadebug_bff_api.Models
+﻿/*
+ * Responsabilidade:
+ * Representa a entidade principal do domínio, a 'Plant' (Planta pertencente ao usuário).
+ * Age como a "Root Aggregate", vinculando o Usuário (Dono), a Espécie (Configurações base) 
+ * e o Dispositivo IoT (Hardware que monitora).
+ *
+ * Relacionamentos:
+ * - 1:N com User, Species
+ * - 1:1 (Opcional) com Device (uma planta pode existir sem hardware acoplado).
+ * - 1:N com SensorReadings, Notifications e DiagnosisResults.
+ *
+ * Papel na arquitetura:
+ * Entidade central da aplicação (tabela 'plants'). A maior parte da lógica de negócio 
+ * gira em torno do estado de saúde (HealthStatus) desta entidade.
+ */
+
+namespace kaadebug_bff_api.Models
 {
     public class Plant
     {
@@ -13,7 +29,7 @@
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
 
-        // Navegação
+
         public User User { get; set; } = null!;
         public Species Species { get; set; } = null!;
         public Device? Device { get; set; }

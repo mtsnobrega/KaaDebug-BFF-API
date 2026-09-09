@@ -1,4 +1,16 @@
-﻿using kaadebug_bff_api.DTOs;
+﻿/*
+ * Responsabilidade:
+ * Gerencia o envio de imagens de plantas para análise de saúde (diagnóstico) e 
+ * salva o histórico das predições.
+ *
+ * Observação de Protótipo/Integração:
+ * Atualmente o serviço atua como um Mock (simulador) para as futuras integrações 
+ * com serviços de Storage (ex: AWS S3) e Inteligência Artificial. Ele gera um 
+ * JSON estruturado falso para manter o aplicativo Mobile funcional enquanto a IA 
+ * não é conectada, preservando a assinatura do contrato da API.
+ */
+
+using kaadebug_bff_api.DTOs;
 using kaadebug_bff_api.Models;
 using kaadebug_bff_api.Repositories.Interfaces;
 using kaadebug_bff_api.Services.Interfaces;
@@ -11,7 +23,7 @@ namespace kaadebug_bff_api.Services
         private readonly IDiagnosisRepository _diagnosisRepo;
         private readonly IPlantRepository _plantRepo;
 
-        // TODO: injetar serviço de storage (Azure Blob / S3) quando disponível
+        // Injetar serviço de storage (Azure Blob / S3) quando disponível
         // private readonly IStorageService _storageService;
 
         public DiagnosisService(
