@@ -1,9 +1,24 @@
-﻿using kaadebug_bff_api.DTOs;
+﻿/*
+ * Responsabilidade:
+ * Gerencia a autenticação de usuários, emissão de tokens JWT, cadastro e fluxo de recuperação de senha (OTP).
+ *
+ * Dependências principais:
+ * - IUserRepository (acesso aos dados de usuário);
+ * - IConfiguration (acesso à secret do JWT e configurações);
+ * - BCrypt.Net (hashing seguro de senhas).
+ *
+ * Observação de Protótipo/Melhoria Futura:
+ * Os códigos de recuperação (OTP) estão sendo armazenados em memória (Dictionary estático).
+ * Para o escopo do TCC/Protótipo isso é perfeitamente funcional. Em um ambiente produtivo 
+ * escalável, isso causaria problemas se a API rodasse em múltiplos servidores, sendo 
+ * recomendado o uso de Redis ou persistência no banco de dados.
+ */
+
+using kaadebug_bff_api.DTOs;
 using kaadebug_bff_api.Models;
 using kaadebug_bff_api.Repositories.Interfaces;
 using kaadebug_bff_api.Services.Interfaces;
 using Microsoft.IdentityModel.Tokens;
-using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -61,7 +76,6 @@ namespace kaadebug_bff_api.Services
         public async Task<ServiceResult> RequestPasswordRecoveryCodeAsync(
             RequestPasswordRecoveryCodeRequest request)
         {
-            // Não informamos se o e-mail existe ou não — evita enumeração de usuários
             var user = await _userRepo.GetByEmailAsync(request.Email);
 
             if (user is not null)
@@ -71,13 +85,11 @@ namespace kaadebug_bff_api.Services
 
                 _recoveryCodes[request.Email.ToLower()] = (code, expiry);
 
-                // TODO: integrar com serviço de e-mail (SendGrid, SES, etc.)
+                // Integração com serviço de e-mail (SendGrid, SES, etc.)
                 // await _emailService.SendRecoveryCodeAsync(request.Email, code);
 
-                // Em desenvolvimento: loga o código para facilitar testes
                 Console.WriteLine($"[DEV] Código de recuperação para {request.Email}: {code}");
             }
-
             return ServiceResult.Ok();
         }
 
@@ -102,7 +114,6 @@ namespace kaadebug_bff_api.Services
 
         public async Task<ServiceResult> ResetPasswordAsync(ResetPasswordRequest request)
         {
-            // Revalida o código no momento da troca — pode ter expirado entre as etapas
             var validationResult = await ValidateRecoveryCodeAsync(
                 new ValidateRecoveryCodeRequest(request.Email, request.Code));
 

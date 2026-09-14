@@ -1,4 +1,16 @@
-﻿using kaadebug_bff_api.Models;
+﻿/*
+ * Responsabilidade:
+ * Classe base abstrata para todos os Controllers da API.
+ * 
+ * Papel na arquitetura:
+ * Implementa o princípio "DRY" (Don't Repeat Yourself).
+ * 1. Isola a lógica repetitiva de extrair o ID do usuário (Guid) a partir 
+ *    do token JWT (claim "sub" ou "NameIdentifier").
+ * 2. Converte o padrão interno de resposta da camada de Serviços (ServiceResult) 
+ *    para retornos HTTP padronizados (IActionResult), mapeando automaticamente 
+ *    falhas de negócio para códigos 400, 401, 404 e 409.
+ */
+using kaadebug_bff_api.Models;
 using kaadebug_bff_api.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;

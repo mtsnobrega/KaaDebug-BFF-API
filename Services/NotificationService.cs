@@ -1,4 +1,15 @@
-﻿using kaadebug_bff_api.DTOs;
+﻿/*
+ * Responsabilidade:
+ * Processa a lógica de visualização e manipulação do histórico de 
+ * notificações dos usuários.
+ *
+ * Papel na arquitetura:
+ * Serviço enxuto que realiza operações de CRUD delegadas ao NotificationRepository,
+ * garantindo o mapeamento de entidades para DTOs e limitando o impacto visual
+ * de enums (transforma enum em string maiúscula para o frontend).
+ */
+
+using kaadebug_bff_api.DTOs;
 using kaadebug_bff_api.Repositories.Interfaces;
 using kaadebug_bff_api.Services.Interfaces;
 

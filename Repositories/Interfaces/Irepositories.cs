@@ -1,4 +1,20 @@
-﻿using kaadebug_bff_api.Models;
+﻿/*
+ * Responsabilidade:
+ * Define os contratos (interfaces) para a camada de acesso a dados (Repositories).
+ * Especifica quais métodos de CRUD e consultas personalizadas cada repositório deve implementar.
+ *
+ * Papel na arquitetura:
+ * Implementa o princípio de Inversão de Dependência (Dependency Inversion) do SOLID.
+ * A camada de Services depende destas interfaces, não da implementação concreta que acessa 
+ * o Entity Framework. Isso reduz o acoplamento e facilita os testes de unidade.
+ * 
+ * Observações sobre o design:
+ * Possui consultas voltadas para o negócio, como 'GetRecentUnreadByUserAsync' e 
+ * 'GetDetailsAsync', indicando que os repositórios não são apenas Wrappers genéricos,
+ * mas atendem aos requisitos específicos de montagem de telas (característica forte de um BFF).
+ */
+
+using kaadebug_bff_api.Models;
 
 namespace kaadebug_bff_api.Repositories.Interfaces
 {
@@ -34,7 +50,6 @@ namespace kaadebug_bff_api.Repositories.Interfaces
         /// e notificações recentes — tudo em uma única query para a tela de Detalhes.
         /// </summary>
         Task<Plant?> GetDetailsAsync(Guid id, Guid userId);
-
         Task AddAsync(Plant plant);
         Task UpdateAsync(Plant plant);
         Task DeleteAsync(Plant plant);
@@ -53,7 +68,6 @@ namespace kaadebug_bff_api.Repositories.Interfaces
         /// Usado para exibir os indicadores atuais na tela de Detalhes.
         /// </summary>
         Task<IEnumerable<SensorReading>> GetLatestByPlantAsync(Guid plantId);
-
         Task AddRangeAsync(IEnumerable<SensorReading> readings);
     }
 

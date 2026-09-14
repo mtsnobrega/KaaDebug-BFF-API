@@ -5,6 +5,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace kaadebug_bff_api.Repositories
 {
+    /*
+     * Responsabilidade:
+     * Gerencia as operações de banco de dados (CRUD e consultas específicas) para a entidade User.
+     *
+     * Papel na arquitetura:
+     * Isola a lógica de persistência e conversão de DateTime (UTC) da entidade User.
+     */
     public class UserRepository : IUserRepository
     {
         private readonly PlantCareDbContext _context;
@@ -28,9 +35,6 @@ namespace kaadebug_bff_api.Repositories
 
         public async Task UpdateAsync(User user)
         {
-            //_context.Users.Update(user);
-            //await _context.SaveChangesAsync();
-
             if (user.CreatedAt.Kind == DateTimeKind.Unspecified)
             {
                 user.CreatedAt = DateTime.SpecifyKind(
@@ -38,12 +42,18 @@ namespace kaadebug_bff_api.Repositories
                     DateTimeKind.Utc
                 );
             }
-
             _context.Users.Update(user);
             await _context.SaveChangesAsync();
         }
     }
 
+    /*
+     * Responsabilidade:
+     * Gerencia a leitura do catálogo mestre de Espécies (Species).
+     *
+     * Observação:
+     * Como se trata de um catálogo pré-populado, possui apenas métodos de leitura.
+     */
     public class SpeciesRepository : ISpeciesRepository
     {
         private readonly PlantCareDbContext _context;
@@ -57,6 +67,10 @@ namespace kaadebug_bff_api.Repositories
             _context.Species.FirstOrDefaultAsync(s => s.Id == id);
     }
 
+    /*
+     * Responsabilidade:
+     * Gerencia a busca e atualização de dispositivos de hardware (Devices / ESP32).
+     */
     public class DeviceRepository : IDeviceRepository
     {
         private readonly PlantCareDbContext _context;
@@ -78,6 +92,15 @@ namespace kaadebug_bff_api.Repositories
         }
     }
 
+    /*
+     * Responsabilidade:
+     * Repositório central da aplicação, gerenciando as Plantas cadastradas pelos usuários.
+     *
+     * Padrão Arquitetural Observado (Aggregate Fetching):
+     * O método 'GetDetailsAsync' demonstra o uso da API como BFF. Ele realiza Eager Loading 
+     * (.Include) de múltiplos relacionamentos filtrados (Notificações não lidas, sensores das 
+     * últimas 24h) para entregar um objeto completo pronto para a tela de Detalhes do Mobile.
+     */
     public class PlantRepository : IPlantRepository
     {
         private readonly PlantCareDbContext _context;
@@ -138,11 +161,19 @@ namespace kaadebug_bff_api.Repositories
             _context.Plants.Remove(plant);
             await _context.SaveChangesAsync();
         }
-
         public Task<int> CountByUserAsync(Guid userId) =>
             _context.Plants.CountAsync(p => p.UserId == userId);
     }
 
+    /*
+     * Responsabilidade:
+     * Acesso aos dados históricos gerados pelos dispositivos IoT.
+     *
+     * Otimização:
+     * O método 'GetLatestByPlantAsync' itera sobre os tipos de sensores conhecidos 
+     * e busca apenas o último registro de cada, evitando trazer milhares de linhas 
+     * desnecessárias para a memória.
+     */
     public class SensorReadingRepository : ISensorReadingRepository
     {
         private readonly PlantCareDbContext _context;
@@ -155,9 +186,10 @@ namespace kaadebug_bff_api.Repositories
                 .OrderBy(r => r.ReadAt)
                 .ToListAsync();
 
+        // Retorna a leitura mais recente de cada tipo de sensor
         public async Task<IEnumerable<SensorReading>> GetLatestByPlantAsync(Guid plantId)
         {
-            // Retorna a leitura mais recente de cada tipo de sensor
+            
             var sensorTypes = Enum.GetValues<SensorType>();
             var results = new List<SensorReading>();
 
@@ -171,10 +203,8 @@ namespace kaadebug_bff_api.Repositories
                 if (latest is not null)
                     results.Add(latest);
             }
-
             return results;
         }
-
         public async Task AddRangeAsync(IEnumerable<SensorReading> readings)
         {
             _context.SensorReadings.AddRange(readings);
@@ -182,6 +212,11 @@ namespace kaadebug_bff_api.Repositories
         }
     }
 
+    /*
+     * Responsabilidade:
+     * Gerenciar alertas e mensagens enviadas aos usuários.
+     * Contém validações implícitas de posse (exige o userId nas consultas).
+     */
     public class NotificationRepository : INotificationRepository
     {
         private readonly PlantCareDbContext _context;
@@ -230,6 +265,12 @@ namespace kaadebug_bff_api.Repositories
         }
     }
 
+    /*
+     * Responsabilidade:
+     * Gerenciar os laudos gerados (possivelmente por IA externa) sobre a saúde da planta.
+     * Garante que um usuário só pode acessar diagnósticos de plantas que lhe pertencem
+     * realizando Join implícito com a entidade Plant via LINQ (.Where(d => d.Plant.UserId == userId)).
+     */
     public class DiagnosisRepository : IDiagnosisRepository
     {
         private readonly PlantCareDbContext _context;

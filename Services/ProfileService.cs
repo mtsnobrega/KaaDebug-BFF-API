@@ -1,4 +1,16 @@
-﻿using kaadebug_bff_api.DTOs;
+﻿/*
+ * Responsabilidade:
+ * Gerencia a atualização de informações cadastrais e redefinição de senha do 
+ * usuário logado.
+ *
+ * Papel na arquitetura:
+ * Atua como mediador seguro para a entidade User. Impede, por exemplo, que 
+ * campos sensíveis sejam sobrescritos inadvertidamente, separando o que pode ser 
+ * alterado (Nome, Configurações de Notificações) através da injeção do BCrypt na 
+ * troca de senha.
+ */
+
+using kaadebug_bff_api.DTOs;
 using kaadebug_bff_api.Repositories.Interfaces;
 using kaadebug_bff_api.Services.Interfaces;
 

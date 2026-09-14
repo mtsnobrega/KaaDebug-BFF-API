@@ -1,4 +1,14 @@
-﻿namespace kaadebug_bff_api.Models
+﻿/*
+ * Responsabilidade:
+ * Representa os alertas emitidos pelo sistema (Notification) para o usuário, 
+ * baseados em eventos como anomalias nos sensores, desconexão de dispositivos, etc.
+ *
+ * Papel na arquitetura:
+ * Persistência do histórico de notificações (tabela 'notifications').
+ * Utiliza o enum nativo 'NotificationPriority' para segregação de criticidade.
+ */
+
+namespace kaadebug_bff_api.Models
 {
     public class Notification
     {
@@ -10,7 +20,7 @@
         public bool IsRead { get; set; } = false;
         public DateTime CreatedAt { get; set; }
 
-        // Navegação
+
         public User User { get; set; } = null!;
         public Plant Plant { get; set; } = null!;
     }

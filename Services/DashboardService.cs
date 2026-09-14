@@ -1,4 +1,15 @@
-﻿using kaadebug_bff_api.DTOs;
+﻿/*
+ * Responsabilidade:
+ * Monta o painel principal (Dashboard) do aplicativo Mobile do usuário logado.
+ *
+ * Papel na arquitetura:
+ * Demonstra a essência de um BFF (Backend for Frontend). Ele agrega chamadas de
+ * múltiplos repositórios (Plant, Notification, User) e processa os dados no backend
+ * para retornar um único payload enxuto (`DashboardResponse`), otimizando o tráfego 
+ * de rede e simplificando o frontend mobile.
+ */
+
+using kaadebug_bff_api.DTOs;
 using kaadebug_bff_api.Repositories.Interfaces;
 using kaadebug_bff_api.Services.Interfaces;
 
@@ -54,5 +65,4 @@ namespace kaadebug_bff_api.Services
             return ServiceResult<DashboardResponse>.Ok(response);
         }
     }
-
 }

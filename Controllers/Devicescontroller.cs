@@ -1,4 +1,14 @@
-﻿using kaadebug_bff_api.DTOs;
+﻿/*
+ * Responsabilidade:
+ * Ponto de entrada (endpoints) para manipulação de Devices (Hardware).
+ * 
+ * Endpoints:
+ * - GET /devices/{code}/status (Consulta se o ESP32 está apto para uso)
+ * 
+ * Serviço utilizado: IDeviceService
+ */
+
+using kaadebug_bff_api.DTOs;
 using kaadebug_bff_api.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

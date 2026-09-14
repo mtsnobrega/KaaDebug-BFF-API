@@ -1,4 +1,17 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿/*
+ * Responsabilidade:
+ * Agrupa praticamente todos os DTOs (Data Transfer Objects) que transitam entre a API (BFF)
+ * e o cliente Mobile, envolvendo operações de Plantas, Dispositivos, Sensores, Dashboard e Diagnóstico.
+ *
+ * Papel na arquitetura:
+ * Este arquivo demonstra de forma clara a função de "Backend for Frontend" da API. 
+ * As entidades complexas (Plant, Device, SensorReading, Species) são achatadas (flattened)
+ * e compostas em objetos focados na tela (ex: PlantDetailsResponse, DashboardResponse).
+ * Os Data Annotations garantem que requisições malformadas (Bad Request - 400) sejam 
+ * bloqueadas automaticamente pelo framework antes de atingirem os Controllers.
+ */
+
+using System.ComponentModel.DataAnnotations;
 
 namespace kaadebug_bff_api.DTOs
 {
@@ -10,8 +23,7 @@ namespace kaadebug_bff_api.DTOs
         string? PhotoUrl,
         IdealRangeDto SoilMoisture,
         IdealRangeDto AirHumidity,
-        IdealRangeDto Temperature,
-        IdealRangeDto Luminosity);
+        IdealRangeDto Temperature);
 
     public record IdealRangeDto(decimal Min, decimal Max, string Unit);
 
@@ -67,7 +79,6 @@ namespace kaadebug_bff_api.DTOs
     public record SensorReadingPointResponse(DateTime Timestamp, double Value);
 
     // ── History ───────────────────────────────────────────────────────────────────
-
     public record PlantHistoryResponse(
         string PlantName,
         string Period,

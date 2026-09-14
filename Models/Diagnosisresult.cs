@@ -1,4 +1,18 @@
-﻿using System.Text.Json;
+﻿/*
+ * Responsabilidade:
+ * Armazena os resultados de diagnósticos realizados sobre imagens enviadas 
+ * pelos usuários para identificar doenças nas plantas.
+ *
+ * Flexibilidade:
+ * O campo 'IssuesJson' (JsonDocument) é crucial, pois permite armazenar 
+ * respostas dinâmicas de uma IA externa (com arrays de recomendações e níveis 
+ * de confiança) sem precisar criar múltiplas tabelas relacionais para os detalhes.
+ *
+ * Papel na arquitetura:
+ * Domínio persistente (tabela 'diagnosis_results').
+ */
+
+using System.Text.Json;
 
 namespace kaadebug_bff_api.Models
 {

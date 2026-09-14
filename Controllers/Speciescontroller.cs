@@ -1,4 +1,14 @@
-﻿using kaadebug_bff_api.DTOs;
+﻿/*
+ * Responsabilidade:
+ * Ponto de entrada (endpoints) para leitura de catálogos fixos do sistema.
+ * 
+ * Endpoints:
+ * - GET /species (Listagem mestre)
+ * 
+ * Serviço utilizado: ISpeciesService
+ */
+
+using kaadebug_bff_api.DTOs;
 using kaadebug_bff_api.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
